@@ -1,0 +1,6 @@
+websites:
+  default:
+    download-directory: "~/Downloads"
+
+  example:
+    url: https://canvas.example.edu/
