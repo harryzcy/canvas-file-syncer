@@ -1,4 +1,4 @@
-from pathlib import PurePath
+from pathlib import Path, PurePath
 from typing import List
 from playwright.sync_api import ElementHandle, Page
 
@@ -42,7 +42,7 @@ class Folder:
 
     @root_path.setter
     def root_path(self, value):
-        self.__root_path = value
+        self.__root_path = str(Path(value).expanduser())
 
     @property
     def local_directory(self):
@@ -73,12 +73,12 @@ class Folder:
         with self.__page.expect_navigation():
             self.__page.locator(f'[data-id="{self.__id}"] > a').click()
 
-    def download(self):
+    def walk(self):
         self.__goto()
 
         self.__get_files()
         for file in self.__files:
-            file.download()
+            yield file
 
         for folder in self.__subfolders:
-            folder.download()
+            yield from folder.walk()
