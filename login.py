@@ -2,6 +2,7 @@ import time
 from config import get_password, get_username
 from playwright.sync_api import Page
 
+
 def login(page: Page, url: str, landing_url: str):
     raise RuntimeError("default login not supported")
 
@@ -10,8 +11,6 @@ def login_kenan_flagler(page: Page, url: str, landing_url: str) -> None:
     page.goto(url)
     with page.expect_navigation():
         page.locator("text=ONYEN Login").click()
-    
-    print(page.locator("text=Verify your identity"))
 
     time.sleep(0.5)
     page.locator("input[type=email]").fill(get_username())
@@ -22,7 +21,7 @@ def login_kenan_flagler(page: Page, url: str, landing_url: str) -> None:
     page.locator("input[type=password]").fill(get_password())
     with page.expect_navigation():
         page.click('input[type=submit]')
-    
+
     if page.url.endswith("/login"):
         # 2-factor auth
         page.locator("div[role=\"button\"]:has-text(\"Text\")").click()
@@ -36,6 +35,6 @@ def login_kenan_flagler(page: Page, url: str, landing_url: str) -> None:
             page.locator("text=Verify").click()
         page.locator("[aria-label=\"Don\\'t\\ show\\ this\\ again\"]").check()
         page.locator("text=Yes").click()
-    
+
     time.sleep(0.5)
     assert page.url.startswith(landing_url)
