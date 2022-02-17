@@ -26,7 +26,8 @@ class Website():
             id = href.split("/")[-1]
             yield Site(page, id, title)
 
-    def goto_site(self, title: str):
+    def goto_site(self, site: Site):
         """Navigate to a site."""
+        title = site.title
         with self.__page.expect_navigation():
             self.__page.locator(f'.ic-DashboardCard__header-title[title="{title}"]').click()

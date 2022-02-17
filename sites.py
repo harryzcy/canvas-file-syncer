@@ -6,4 +6,12 @@ class Site:
         self.__page = page
         self.__id = id
         self.__title = title
+    
+    @property
+    def id(self):
+        return self.__id
+    
+    @property
+    def title(self):
+        return self.__title
 
