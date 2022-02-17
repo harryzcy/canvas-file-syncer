@@ -1,8 +1,11 @@
 import os
 import sys
+from typing import Any, Callable
 from playwright.sync_api import Playwright, Page, sync_playwright
 
 import config
+import login
+from website import Website
 
 
 def start(playwright: Playwright, debug=False) -> Page:
@@ -20,8 +23,26 @@ def finish(page: Page):
 
 
 def main(debug=False):
+    websites = config.get_websites()
+
     with sync_playwright() as p:
         page = start(p, debug=debug)
+
+        for name in websites:
+            if name == 'default':
+                continue
+
+            login_func: Callable[[Page, str, str], Any] = getattr(
+                login,
+                config.get_website_config(name, 'login_func')
+            )
+            website = Website(page,
+                              url=config.get_website_config(name, 'url'),
+                              landing_url=config.get_website_config(
+                                  name, 'landing_url'),
+                              login=login_func)
+
+            website.login()
 
         finish(page)
 
