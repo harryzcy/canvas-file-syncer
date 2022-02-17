@@ -12,23 +12,14 @@ class Folder:
         self.__level = int(element.get_attribute('aria-level'))
         self.__id = element.get_attribute('data-id')
 
-        self.__parent: Folder = None
         self.__subfolders: List[Folder] = []
         self.__files: List[File] = []
 
         self.__get_subfolders()
 
     @property
-    def parent(self):
-        return self.__parent
-
-    @property
     def children(self):
         return self.__children
-
-    @parent.setter
-    def parent(self, value):
-        self.parent: Folder = value
 
     @property
     def folder_name(self):
