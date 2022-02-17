@@ -1,7 +1,9 @@
 websites:
   default:
     download-directory: "~/Downloads"
+    login_func: login
 
   example:
     url: https://canvas.example.edu/
     landing_url: https://example.instructure.com/
+    login_func: login_custom

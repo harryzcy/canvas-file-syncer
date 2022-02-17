@@ -2,6 +2,9 @@ import time
 from config import get_password, get_username
 from playwright.sync_api import Page
 
+def login(page: Page, url: str, landing_url: str):
+    raise RuntimeError("default login not supported")
+
 
 def login_kenan_flagler(page: Page, url: str, landing_url: str) -> None:
     page.goto(url)
