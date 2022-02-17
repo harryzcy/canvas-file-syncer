@@ -44,6 +44,13 @@ def main(debug=False):
 
             website.login()
 
+            sites = website.get_sites()
+            for site in sites:
+                site.goto_files()
+                folder = site.get_folders()
+                folder.root_path = config.get_website_config(
+                    name, 'download-directory')
+
         finish(page)
 
 
