@@ -4,3 +4,4 @@ websites:
 
   example:
     url: https://canvas.example.edu/
+    landing_url: https://example.instructure.com/
