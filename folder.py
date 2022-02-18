@@ -1,4 +1,5 @@
 from pathlib import Path, PurePath
+import time
 from typing import List
 from playwright.sync_api import ElementHandle, Page
 
@@ -74,7 +75,9 @@ class Folder:
             self.__page.locator(f'[data-id="{self.__id}"] > a').click()
 
     def walk(self):
-        self.__goto()
+        with self.__page.expect_navigation(wait_until='networkidle'):
+            self.__goto()
+            time.sleep(0.5)
 
         self.__get_files()
         for file in self.__files:
