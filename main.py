@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 from typing import Any, Callable
@@ -12,13 +13,27 @@ import downloader
 def start(playwright: Playwright, debug=False) -> Page:
     browser = playwright.chromium.launch(headless=not debug)
     context = browser.new_context()
-    page = context.new_page()
 
+    try:
+        cookie_file = config.get_cookies_filepath()
+        with open(cookie_file, 'r') as f:
+            content = f.read()
+            cookies = json.loads(content)
+            context.add_cookies(cookies)
+    except FileNotFoundError:
+        pass
+    
+    page = context.new_page()
     return page
 
 
 def finish(page: Page):
     page.close()
+    
+    cookie_file = config.get_cookies_filepath()
+    with open(cookie_file, 'w') as f:
+        f.write(json.dumps(page.context.cookies()))
+
     page.context.close()
     page.context.browser.close()
 

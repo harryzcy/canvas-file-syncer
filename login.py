@@ -9,6 +9,11 @@ def login(page: Page, url: str, landing_url: str):
 
 def login_kenan_flagler(page: Page, url: str, landing_url: str) -> None:
     page.goto(url)
+
+    page.wait_for_load_state('load')
+    if page.url.startswith(landing_url):
+        return
+
     with page.expect_navigation():
         page.locator("text=ONYEN Login").click()
 

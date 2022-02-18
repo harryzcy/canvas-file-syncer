@@ -37,6 +37,10 @@ def get_password():
     return password
 
 
+def get_cookies_filepath() -> str:
+    return config.get('cookies').get('filepath')
+
+
 def get_websites() -> List[str]:
     return config.get('websites').keys()
 
