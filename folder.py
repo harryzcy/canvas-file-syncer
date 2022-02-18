@@ -18,7 +18,7 @@ class Folder:
         self.__subfolders: List[Folder] = []
         self.__files: List[File] = []
 
-        self.__get_subfolders()
+        self.__get_subfolders(element)
 
     @property
     def parent(self):
@@ -30,7 +30,7 @@ class Folder:
 
     @parent.setter
     def parent(self, value):
-        self.parent: Folder = value
+        self.__parent: Folder = value
 
     @property
     def folder_name(self):
@@ -56,7 +56,7 @@ class Folder:
     def __get_subfolders(self, element: ElementHandle):
         els = element.query_selector_all(
             f'li[role="treeitem"][aria-level="{self.__level + 1}"]')
-        self.__subfolders = [Folder(el) for el in els]
+        self.__subfolders = [Folder(self.__page, el) for el in els]
         for folder in self.__subfolders:
             folder.parent = self
 
@@ -67,7 +67,7 @@ class Folder:
             size = el.query_selector('.ef-size-col').inner_text()
             if size != '--':
                 # is file
-                self.__files.append(File(self.__page, el))
+                self.__files.append(File(self.__page, self, el))
 
     def __goto(self):
         with self.__page.expect_navigation():

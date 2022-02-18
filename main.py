@@ -6,6 +6,7 @@ from playwright.sync_api import Playwright, Page, sync_playwright
 import config
 import login
 from website import Website
+import downloader
 
 
 def start(playwright: Playwright, debug=False) -> Page:
@@ -43,13 +44,18 @@ def main(debug=False):
                               login=login_func)
 
             website.login()
+            page.wait_for_load_state('networkidle')
 
             sites = website.get_sites()
             for site in sites:
+                website.goto_site(site)
                 site.goto_files()
                 folder = site.get_folders()
                 folder.root_path = config.get_website_config(
                     name, 'download-directory')
+
+                for file in folder.walk():
+                    downloader.sync(page.context, file)
 
         finish(page)
 

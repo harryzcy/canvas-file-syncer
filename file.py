@@ -1,10 +1,8 @@
 from playwright.sync_api import Page, ElementHandle
 
-from folder import Folder
-
 
 class File:
-    def __init__(self, page: Page, parent: Folder, element: ElementHandle):
+    def __init__(self, page: Page, parent, element: ElementHandle):
         self.__page = page
         self.__parent = parent
         self.__element = element
@@ -26,3 +24,7 @@ class File:
     @property
     def url(self):
         return self.__url
+    
+    @property
+    def date_modified(self):
+        return self.__date_modified

@@ -27,4 +27,4 @@ class Site:
         """Returns the root folder that contains all other folders"""
         root_folder = self.__page.locator('.ef-folder-list li[aria-level="1"]')
         element = root_folder.element_handle()
-        return Folder(element)
+        return Folder(self.__page, element)

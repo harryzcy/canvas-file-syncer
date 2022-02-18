@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional, TypedDict
 from playwright.sync_api import BrowserContext
 import requests
+import iso8601
 
 from file import File
 
@@ -18,6 +19,10 @@ def __get_filename_from_content_disposition(content_disposition) -> str:
 
 def __parse_date(date_str: str) -> datetime.datetime:
     return datetime.datetime(*eut.parsedate(date_str)[:6])
+
+
+def __parse_date_rfc3339(date_str: str) -> datetime.datetime:
+    return iso8601.parse_date(date_str)
 
 
 class HeadResult(TypedDict, total=False):
@@ -38,11 +43,11 @@ def __get_cookie_jar_from_context(context: BrowserContext, url: str) -> requests
     return jar
 
 
-def head(context: BrowserContext, url: str) -> HeadResult:
+def head(context: BrowserContext, url: str, last_modified: datetime.datetime) -> HeadResult:
     jar = __get_cookie_jar_from_context(context, url)
     if url is None:
         return
-    res = requests.head(url, cookies=jar)
+    res = requests.head(url, cookies=jar, allow_redirects=True)
 
     if res.status_code not in [200, 302]:
         # TODO: log the error
@@ -50,12 +55,15 @@ def head(context: BrowserContext, url: str) -> HeadResult:
 
     content_length = res.headers.get('Content-Length')
     content_disposition = res.headers.get('Content-Disposition')
+    last_modified = __parse_date(
+        res.headers.get('Last-Modified')
+    ) if 'Last-Modified' in res.headers else last_modified
 
     return {
         "url": url,
         "filename": __get_filename_from_content_disposition(content_disposition) if content_disposition else '',
         "date": __parse_date(res.headers['Date']),
-        "last_modified": __parse_date(res.headers['Last-Modified']),
+        "last_modified": last_modified,
         "content_type": res.headers.get('Content-Type'),
         "content_length": int(content_length) if content_length else None
     }
@@ -64,11 +72,11 @@ def head(context: BrowserContext, url: str) -> HeadResult:
 def sync(context: BrowserContext, file: File):
     directory = Path(file.local_directory).expanduser()
     directory.mkdir(parents=True, exist_ok=True)
-    __download_file(context, file.url, directory)
+    __download_file(context, file.url, directory, __parse_date_rfc3339(file.date_modified))
 
 
-def __check_if_downloaded(context: BrowserContext, url: str, directory: str) -> bool:
-    info = head(context, url)
+def __check_if_downloaded(context: BrowserContext, url: str, directory: str, last_modified: datetime.datetime) -> bool:
+    info = head(context, url, last_modified)
     if info is None:
         return True
     last_modified = info['last_modified']
@@ -82,9 +90,9 @@ def __check_if_downloaded(context: BrowserContext, url: str, directory: str) -> 
         return False
 
 
-def __download_file(context: BrowserContext, url: str, directory: str):
+def __download_file(context: BrowserContext, url: str, directory: str, last_modified: datetime.datetime):
     # don't download if already downloaded
-    if __check_if_downloaded(context, url, directory):
+    if __check_if_downloaded(context, url, directory, last_modified):
         return
 
     jar = __get_cookie_jar_from_context(context, url)

@@ -14,9 +14,9 @@ class Website():
     def login(self):
         self.__login(self.__page, self.__url, self.__landing_url)
 
-    def get_sites(page: Page) -> Iterable[Site]:
+    def get_sites(self) -> Iterable[Site]:
         """Get all sites on the current website."""
-        cards = page.locator(
+        cards = self.__page.locator(
             '#DashboardCard_Container .ic-DashboardCard').element_handles()
 
         for card in cards:
@@ -24,7 +24,7 @@ class Website():
             href = card.query_selector(
                 '.ic-DashboardCard__link').get_attribute('href')
             id = href.split("/")[-1]
-            yield Site(page, id, title)
+            yield Site(self.__page, id, title)
 
     def goto_site(self, site: Site):
         """Navigate to a site."""
