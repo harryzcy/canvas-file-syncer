@@ -17,8 +17,7 @@ def login_kenan_flagler(page: Page, url: str, landing_url: str) -> None:
     with page.expect_navigation():
         page.locator("input[type=submit]").click()
 
-    time.sleep(0.5)
-    # TODO: sometimes it will fail
+    time.sleep(1)
     page.locator("input[type=password]").fill(get_password())
     with page.expect_navigation():
         page.click('input[type=submit]')
