@@ -55,6 +55,7 @@ class Folder:
         return dir
 
     def __get_subfolders(self, element: ElementHandle):
+        time.sleep(1)
         els = element.query_selector_all(
             f'li[role="treeitem"][aria-level="{self.__level + 1}"]')
         self.__subfolders = [Folder(self.__page, el) for el in els]

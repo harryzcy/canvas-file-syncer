@@ -22,14 +22,14 @@ def start(playwright: Playwright, debug=False) -> Page:
             context.add_cookies(cookies)
     except FileNotFoundError:
         pass
-    
+
     page = context.new_page()
     return page
 
 
 def finish(page: Page):
     page.close()
-    
+
     cookie_file = config.get_cookies_filepath()
     with open(cookie_file, 'w') as f:
         f.write(json.dumps(page.context.cookies()))
@@ -62,12 +62,17 @@ def main(debug=False):
             page.wait_for_load_state('networkidle')
 
             sites = website.get_sites()
-            for site in sites:
+            target_sites = config.get_website_config(name, 'sites')
+            for title, value in target_sites.items():
+                site = website.get_site(title)
+                if site is None:
+                    continue
+
                 website.goto_site(site)
                 site.goto_files()
                 folder = site.get_folders()
-                folder.root_path = config.get_website_config(
-                    name, 'download-directory')
+                folder.root_path = value.get('download-directory',
+                                             config.get_website_config(name, 'download-directory'))
 
                 for file in folder.walk():
                     downloader.sync(page.context, file)

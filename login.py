@@ -16,6 +16,11 @@ def login_unc(page: Page, url: str, landing_url: str) -> None:
 
     with page.expect_navigation():
         page.locator('text="Onyen Login"').click()
+    
+    if page.url.startswith(landing_url):
+        page.click("text=Not Now")
+        page.click("text=Done")
+        return
 
     page.fill("input[id=\"username\"]", get_username())
     page.fill("input[id=\"password\"]", get_password())
