@@ -7,6 +7,25 @@ def login(page: Page, url: str, landing_url: str):
     raise RuntimeError("default login not supported")
 
 
+def login_unc(page: Page, url: str, landing_url: str) -> None:
+    page.goto(url)
+
+    page.wait_for_load_state('load')
+    if page.url.startswith(landing_url):
+        return
+
+    with page.expect_navigation():
+        page.locator('text="Onyen Login"').click()
+
+    page.fill("input[id=\"username\"]", get_username())
+    page.fill("input[id=\"password\"]", get_password())
+
+    with page.expect_navigation(url=landing_url):
+        page.click("text=Sign in")
+    page.click("text=Not Now")
+    page.click("text=Done")
+
+
 def login_kenan_flagler(page: Page, url: str, landing_url: str) -> None:
     page.goto(url)
 
