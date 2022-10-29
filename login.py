@@ -22,11 +22,12 @@ def login_unc(page: Page, url: str, landing_url: str) -> None:
         page.click("text=Done")
         return
 
-    page.fill("input[id=\"username\"]", get_username())
-    page.fill("input[id=\"password\"]", get_password())
+    page.locator("input[type=\"text\"]").fill(get_username())
+    page.locator("text=Loading... Next").click()
+    page.locator("input[name=\"j_password\"]").fill(get_password())
 
     with page.expect_navigation(url=landing_url):
-        page.click("text=Sign in")
+        page.locator("text=Loading... Sign in").click()
     page.click("text=Not Now")
     page.click("text=Done")
 
