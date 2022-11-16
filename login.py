@@ -16,15 +16,17 @@ def login_unc(page: Page, url: str, landing_url: str) -> None:
 
     with page.expect_navigation():
         page.locator('text="Onyen Login"').click()
-    
+
     if page.url.startswith(landing_url):
         page.click("text=Not Now")
         page.click("text=Done")
         return
 
-    page.locator("input[type=\"text\"]").fill(get_username())
+    page.locator(
+        "text=Onyen -or- UNC Guest ID Loading... Next Important This browser does not support  >> input[name=\"j_username\"]").fill(get_username())
     page.locator("text=Loading... Next").click()
-    page.locator("input[name=\"j_password\"]").fill(get_password())
+    page.locator(
+        "text=Password Loading... Sign in Change Onyen -or- UNC Guest ID >> input[name=\"j_password\"]").fill(get_password())
 
     with page.expect_navigation(url=landing_url):
         page.locator("text=Loading... Sign in").click()
